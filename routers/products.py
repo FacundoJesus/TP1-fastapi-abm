@@ -70,8 +70,20 @@ def add_product(newProduct:Product) -> CreateProductResponse:
         product= newProduct
     )
 
-# Eliminar Producto
+# Eliminar Producto por ID
+@router.delete("/product/{id}")
+def delete_product(idProduct: int) -> DeleteProductResponse:
+
+    for product in products:
+        if product.id == idProduct:
+            products.remove(product)
+            return DeleteProductResponse(message="Product deleted succesfully")
+
+    raise HTTPException (
+        status_code = status.HTTP_404_NOT_FOUND,
+        detail = "Product not found"
+    )
 
 # Actualizar Producto
 
-# Buscar Producto por ID
+# Buscar y Obtener Producto por ID
