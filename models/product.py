@@ -21,6 +21,13 @@ class Product(BaseModel):
         return self
 
 
+# Esquema para crear un producto (lo que envía el usuario)
+class ProductCreate(BaseModel):
+    code: str
+    name: str
+    description: str | None = None
+    quantity: int
+
 
 
 # Responses
@@ -37,3 +44,6 @@ class DeleteProductResponse(BaseModel):
 class UpdateProductResponse(BaseModel):
     message:str
     product:Product
+
+class GetProductByIdResponse(BaseModel):
+    product: Product

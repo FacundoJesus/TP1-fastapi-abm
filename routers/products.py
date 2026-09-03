@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from models.product import Product, GetProductsResponse, CreateProductResponse, DeleteProductResponse, UpdateProductResponse
+from models.product import Product, ProductCreate, GetProductByIdResponse, GetProductsResponse, CreateProductResponse, DeleteProductResponse, UpdateProductResponse
 
 router = APIRouter()
 
@@ -49,25 +49,36 @@ def get_out_stock_products() -> GetProductsResponse:
     
 # Agregar Producto
 @router.post("/products")
-def add_product(newProduct:Product) -> CreateProductResponse:
+def add_product(new_product: ProductCreate) -> CreateProductResponse:  # <-- Recibe ProductCreate
 
+    # 1. Validar que no exista otro producto con el mismo código
     for existProduct in products:
-        if existProduct.id == newProduct.id:
-            raise HTTPException (
-            status_code = status.HTTP_400_BAD_REQUEST,
-            detail= f"Product with ID {newProduct.id} already exists"
-            )
-        if existProduct.code == newProduct.code:
+        if existProduct.code == new_product.code:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Product with CODE {newProduct.code} already exists"
+                detail=f"Product with CODE {new_product.code} already exists"
             )
 
-    products.append(newProduct)
+    # 2. Generar el ID autoincremental
+    next_id = 1 if len(products) == 0 else max(p.id for p in products) + 1
 
+    # 3. Crear la entidad completa Product
+    product_to_save = Product(
+        id=next_id,
+        code=new_product.code,
+        name=new_product.name,
+        description=new_product.description,
+        quantity=new_product.quantity,
+        in_stock=new_product.quantity > 0
+    )
+
+    # 4. Guardar en memoria
+    products.append(product_to_save)
+
+    # 5. Retornar la respuesta con el producto completo (ya con ID y stock)
     return CreateProductResponse(
         message="Product created successfully",
-        product= newProduct
+        product=product_to_save
     )
 
 # Eliminar Producto por ID
@@ -84,6 +95,56 @@ def delete_product(idProduct: int) -> DeleteProductResponse:
         detail = "Product not found"
     )
 
+
 # Actualizar Producto
+@router.put("/products/{id}")
+def update_product(id: int, updated_data: ProductCreate) -> UpdateProductResponse:
+
+    for index, existing_product in enumerate(products):
+        if existing_product.id == id:
+
+            # 1. Validar que el nuevo 'code' no lo tenga OTRO producto distinto
+            for product in products:
+                if product.code == updated_data.code and product.id != id:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail=f"Product with CODE {updated_data.code} already exists"
+                    )
+
+            # 2. Armar el producto actualizado manteniendo el ID de la URL
+            product_updated = Product(
+                id=id,
+                code=updated_data.code,
+                name=updated_data.name,
+                description=updated_data.description,
+                quantity=updated_data.quantity,
+                in_stock=updated_data.quantity > 0
+            )
+
+            # 3. Reemplazar en la lista
+            products[index] = product_updated
+
+            return UpdateProductResponse(
+                message="Product updated successfully",
+                product=product_updated
+            )
+        
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Product with ID: {id} not found"
+    )
+
 
 # Buscar y Obtener Producto por ID
+@router.get("/products/{id}")
+def get_product_by_id(id:int) -> GetProductByIdResponse:
+
+    for product in products:
+        if product.id == id:
+            return GetProductByIdResponse(product=product)
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Product with ID: {id} not found"
+    )
