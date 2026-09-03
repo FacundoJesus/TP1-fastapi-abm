@@ -1,11 +1,13 @@
 from fastapi import FastAPI
-from routers import users
+from routers import users,products
+
 
 # Creo la instancia de aplicacion
 app = FastAPI()
 
 # Router a endpoints user
 app.include_router(users.router)
+app.include_router(products.router)
 
 # Defino la ruta GET para la URL de la ruta
 @app.get("/")

@@ -9,14 +9,7 @@ users = []
 
 # Obtener todos los usuarios
 @router.get("/users")
-def get_all_users() -> GetUsersResponse:
-    
-    if not users:
-        raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND,
-            detail = "Users not found"
-        )
-    
+def get_all_users() -> GetUsersResponse:   
     return GetUsersResponse(users= users)
 
 
@@ -60,20 +53,20 @@ def get_inactive_users() -> GetUsersResponse:
 
 # Crear usuario
 @router.post("/users")
-def create_user(user: User) -> CreateUserResponse:
+def create_user(newUser: User) -> CreateUserResponse:
 
     for existUser in users:
-        if existUser.id == user.id:
+        if existUser.id == newUser.id:
             raise HTTPException(
                 status_code= status.HTTP_400_BAD_REQUEST,
-                detail= f"User with ID {user.id} already exists"
+                detail= f"User with ID {newUser.id} already exists"
             )
         
-    users.append(user)
+    users.append(newUser)
 
     return CreateUserResponse(
         message="User created successfully",
-        user= user
+        user= newUser
     )
 
 
