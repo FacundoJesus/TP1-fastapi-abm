@@ -5,15 +5,15 @@ router = APIRouter()
 
 # Array de Productos
 products = []
-
+current_id = 0  # Contador global
 # Obtener todos los productos
-@router.get("/products")
+@router.get("/products", status_code=status.HTTP_200_OK)
 def get_all_products() -> GetProductsResponse:
     return GetProductsResponse(products=products)
 
     
 # Obtener los productos en Stock
-@router.get("/products/instock")
+@router.get("/products/instock", status_code=status.HTTP_200_OK)
 def get_in_stock_products() -> GetProductsResponse:
     inStock = []
 
@@ -31,7 +31,7 @@ def get_in_stock_products() -> GetProductsResponse:
 
 
 # Obtener los productos sin Stock
-@router.get("/products/outstock")
+@router.get("/products/outstock", status_code=status.HTTP_200_OK)
 def get_out_stock_products() -> GetProductsResponse:
 
     outStock= []
@@ -48,7 +48,7 @@ def get_out_stock_products() -> GetProductsResponse:
 
     
 # Agregar Producto
-@router.post("/products")
+@router.post("/products", status_code=status.HTTP_201_CREATED)
 def add_product(new_product: ProductCreate) -> CreateProductResponse:  # <-- Recibe ProductCreate
 
     # 1. Validar que no exista otro producto con el mismo código
@@ -59,8 +59,9 @@ def add_product(new_product: ProductCreate) -> CreateProductResponse:  # <-- Rec
                 detail=f"Product with CODE {new_product.code} already exists"
             )
 
-    # 2. Generar el ID autoincremental
-    next_id = 1 if len(products) == 0 else max(p.id for p in products) + 1
+    # 2. Generamos el ID sumando 1 al contador
+    current_id += 1
+    next_id = current_id
 
     # 3. Crear la entidad completa Product
     product_to_save = Product(
@@ -82,7 +83,7 @@ def add_product(new_product: ProductCreate) -> CreateProductResponse:  # <-- Rec
     )
 
 # Eliminar Producto por ID
-@router.delete("/product/{id}")
+@router.delete("/product/{id}", status_code=status.HTTP_200_OK)
 def delete_product(idProduct: int) -> DeleteProductResponse:
 
     for product in products:
@@ -97,7 +98,7 @@ def delete_product(idProduct: int) -> DeleteProductResponse:
 
 
 # Actualizar Producto
-@router.put("/products/{id}")
+@router.put("/products/{id}", status_code=status.HTTP_200_OK)
 def update_product(id: int, updated_data: ProductCreate) -> UpdateProductResponse:
 
     for index, existing_product in enumerate(products):
@@ -129,7 +130,6 @@ def update_product(id: int, updated_data: ProductCreate) -> UpdateProductRespons
                 product=product_updated
             )
         
-
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Product with ID: {id} not found"
@@ -137,7 +137,7 @@ def update_product(id: int, updated_data: ProductCreate) -> UpdateProductRespons
 
 
 # Buscar y Obtener Producto por ID
-@router.get("/products/{id}")
+@router.get("/products/{id}", status_code=status.HTTP_200_OK)
 def get_product_by_id(id:int) -> GetProductByIdResponse:
 
     for product in products:
