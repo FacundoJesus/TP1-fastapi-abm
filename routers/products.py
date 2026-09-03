@@ -54,8 +54,13 @@ def add_product(newProduct:Product) -> CreateProductResponse:
     for existProduct in products:
         if existProduct.id == newProduct.id:
             raise HTTPException (
-            status_code = status.HTTP_400_NOT_FOUND,
+            status_code = status.HTTP_400_BAD_REQUEST,
             detail= f"Product with ID {newProduct.id} already exists"
+            )
+        if existProduct.code == newProduct.code:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Product with CODE {newProduct.code} already exists"
             )
 
     products.append(newProduct)
