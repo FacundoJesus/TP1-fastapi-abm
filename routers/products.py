@@ -83,7 +83,9 @@ def get_out_stock_products() -> GetProductsResponse:
     
 # Agregar Producto
 @router.post("/products", status_code=status.HTTP_201_CREATED)
-def add_product(new_product: ProductCreate) -> CreateProductResponse:  # <-- Recibe ProductCreate
+def add_product(new_product: ProductCreate) -> CreateProductResponse: # <-- Recibe ProductCreate
+      
+    global contadorId  # <-- Permite modificar la variable global
 
     # 1. Validar que no exista otro producto con el mismo código
     for existProduct in products:
@@ -94,8 +96,8 @@ def add_product(new_product: ProductCreate) -> CreateProductResponse:  # <-- Rec
             )
 
     # 2. Generamos el ID sumando 1 al contador
-    current_id += 1
-    next_id = current_id
+    contadorId += 1
+    next_id = contadorId
 
     # 3. Crear la entidad completa Product
     product_to_save = Product(
