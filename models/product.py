@@ -40,6 +40,7 @@ class CreateProductResponse(BaseModel):
 
 class DeleteProductResponse(BaseModel):
     message:str
+    product: Product
 
 class UpdateProductResponse(BaseModel):
     message:str

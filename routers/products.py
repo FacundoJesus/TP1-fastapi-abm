@@ -125,7 +125,7 @@ def delete_product(idProduct: int) -> DeleteProductResponse:
     for product in products:
         if product.id == idProduct:
             products.remove(product)
-            return DeleteProductResponse(message="Product deleted succesfully")
+            return DeleteProductResponse(message="Product deleted succesfully", product=product)
 
     raise HTTPException (
         status_code = status.HTTP_404_NOT_FOUND,
