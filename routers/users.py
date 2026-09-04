@@ -106,7 +106,7 @@ def update_user(id: int, user:User) -> UpdateUserResponse:
             #BLINDAJE: Fuerzo que el ID del objeto sea SIEMPRE el de la URL.
             user.id = id
 
-            # Lo actualizo - (Reemplazar y retornar)
+            # Lo actualizo en esa posición - (Reemplazar y retornar)
             users[index] = user
 
             return UpdateUserResponse(
