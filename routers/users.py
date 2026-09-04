@@ -6,6 +6,17 @@ router = APIRouter()
 # Array de usuarios
 users = []
 
+# Cargo usuarios en memoria:
+
+u1 = User(id=1, name="Facundo")
+users.append(u1)
+
+u2 = User(id=2, name="Lucía", is_active=True)
+users.append(u2)
+
+u3 = User(id=3, name="Martín", is_active=False)
+users.append(u3)
+
 
 # Obtener todos los usuarios
 @router.get("/users")
