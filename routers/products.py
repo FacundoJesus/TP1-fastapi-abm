@@ -5,7 +5,41 @@ router = APIRouter()
 
 # Array de Productos
 products = []
-current_id = 0  # Contador global
+# Contador global
+contadorId = 0  
+# Agrego productos en Memoria:
+p1 = Product (
+    id=contadorId,
+    code= "XXX212",
+    name= "TV Samsung",
+    description= "TV de 55",
+    quantity= 15,
+    in_stock=True
+)
+products.append(p1)
+
+contadorId += 1
+p2 = Product(
+    id=contadorId, 
+    code="YYY343", 
+    name="Celular Motorola", 
+    description="Pantalla 6.5 OLED", 
+    quantity=8, 
+    in_stock=True
+    )
+products.append(p2)
+
+contadorId += 1
+p3 = Product(
+    id=contadorId, 
+    code="ZZZ567", 
+    name="Auriculares Sony", 
+    description="Cancelación de ruido", 
+    quantity=0, 
+    in_stock=False
+)
+products.append(p3)
+
 # Obtener todos los productos
 @router.get("/products", status_code=status.HTTP_200_OK)
 def get_all_products() -> GetProductsResponse:
